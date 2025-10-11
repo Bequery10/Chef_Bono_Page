@@ -18,7 +18,7 @@
 
     /* Navbar */
     nav {
-      background: #2c3e50;
+      background: #EADBD0;
       color: #fff;
       display: flex;
       justify-content: space-between;
@@ -45,14 +45,14 @@
     }
 
     nav ul li a:hover {
-      color: #1abc9c;
+      color: #a9b5b3;
     }
 
     /* Hero Section */
     .hero {
       text-align: center;
       padding: 100px 20px;
-      background: linear-gradient(135deg, #1abc9c, #16a085);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.7)), url('image2.jpg') center/cover no-repeat;
       color: white;
     }
 
@@ -82,6 +82,8 @@
 
     /* Features Section */
     .features {
+      background: linear-gradient(135deg, rgba(71, 104, 71, 0.7), rgba(40, 68, 32, 0.7));
+      
       padding: 60px 20px;
       text-align: center;
     }
@@ -100,17 +102,17 @@
       background: white;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
     }
 
     .feature-card h3 {
       margin-bottom: 15px;
-      color: #16a085;
+      color: #7b9d97;
     }
 
     /* Team Section */
     .team {
-      background: #ecf0f1;
+      background: #000000;
       padding: 60px 20px;
       text-align: center;
     }
@@ -142,6 +144,7 @@
 
     /* Contact Section */
     .contact {
+      background: #000000;
       padding: 60px 20px;
       text-align: center;
     }
@@ -154,7 +157,7 @@
 
     /* Footer */
     footer {
-      background: #2c3e50;
+      background: #000000;
       color: #ccc;
       text-align: center;
       padding: 15px;
@@ -166,7 +169,6 @@
 
   <!-- Navbar -->
   <nav>
-    <h1>Our Project</h1>
     <ul>
       <li><a href="#features">Features</a></li>
       <li><a href="#team">Team</a></li>
@@ -176,48 +178,51 @@
 
   <!-- Hero -->
   <section class="hero">
-    <h2>🚀 Welcome to Our Project</h2>
-    <p>We are building something amazing to solve [your problem here].</p>
-    <button>Learn More</button>
+    <h2 style="font-family: 'Playfair Display', serif; font-weight: 2000; letter-spacing: 2px; font-size: 8rem;">Chef Bono</h2>
+    <p style="font-family: 'Playfair Display', serif; font-size: 1.3rem; font-style: italic;">Your favorite virtual chef, at your service.</p>
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700&display=swap" rel="stylesheet">
+    <button style="background: #EADBD0; color: #ffffff;">Learn More</button>
   </section>
 
   <!-- Features -->
   <section id="features" class="features">
-    <h2>✨ Features</h2>
+    
+    <h2 style = "font-size: 2rem;">Features</h2>
     <div class="features-grid">
       <div class="feature-card">
-        <h3>⚡ Fast</h3>
-        <p>Our solution is quick and efficient for everyone.</p>
+        <h3 style = "font-size: 1.5rem; ">Cooking Assistance</h3>
+        <p style = "font-size: 1.3rem; ">Get step-by-step guidance for your recipes via observing, listening, and speaking.</p>
       </div>
       <div class="feature-card">
-        <h3>🔒 Secure</h3>
-        <p>We prioritize safety and privacy at every step.</p>
+        <h3 style = "font-size: 1.5rem; ">Various Meal Categories</h3>
+        <p style = "font-size: 1.3rem; ">Diet, Vegan, Vegetarian, Gluten-Free, Desired Calorie and protein intake, and many more.</p>
       </div>
       <div class="feature-card">
-        <h3>🌍 Accessible</h3>
-        <p>Use it anywhere, anytime, on any device.</p>
+        <h3 style = "font-size: 1.5rem; "> Safety and Tidiness </h3>
+        <p style = "font-size: 1.3rem; ">Sets timers for your foods, warns if attempted anything dangerous and reminds you to keep the kitchen clean for the aftermath.</p>
       </div>
     </div>
   </section>
 
   <!-- Team -->
   <section id="team" class="team">
-    <h2>👨‍💻 Meet the Team</h2>
+    <h2>Meet The Team</h2>
     <div class="team-members">
       <div class="member">
         <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>John Doe</h3>
-        <p>Developer</p>
+        <h3>Yelda Sıla Mumcu</h3>
       </div>
       <div class="member">
         <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Jane Smith</h3>
-        <p>Designer</p>
+        <h3>Berkan Gökgöz</h3>
       </div>
       <div class="member">
         <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Alex Brown</h3>
-        <p>Engineer</p>
+        <h3>Buse Şahin</h3>
+      </div>
+      <div class="member">
+        <img src="https://via.placeholder.com/150" alt="Member">
+        <h3>Eren Serdar</h3>
       </div>
     </div>
   </section>
@@ -225,7 +230,7 @@
   <!-- Contact -->
   <section id="contact" class="contact">
     <h2>📩 Get in Touch</h2>
-    <p>Email us at <a href="mailto:team@ourproject.com">team@ourproject.com</a></p>
+    <p>Email us at <a href="mailto:chef.bono.vc@outlook.com">chef.bono.vc@outlook.com</a></p>
   </section>
 
   <!-- Footer -->
