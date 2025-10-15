@@ -6,19 +6,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chef_Bono</title>
   <style>
+    /* CSS Variables for Light/Dark Mode */
+    :root {
+      --bg-primary: #f7f9fc;
+      --bg-secondary: #ffffff;
+      --text-primary: #333;
+      --text-secondary: #000;
+      --text-light: #ffffff;
+      --text-muted: #a9a9a9;
+      --link-color: #16a085;
+      --selection-bg: #0060d4;
+      --selection-text: #ffffff;
+      --border-color: #e0e0e0;
+      --shadow-color: rgba(0,0,0,0.1);
+    }
+
+    /* Dark Mode Variables */
+    [data-theme="dark"] {
+      --bg-primary: #181a1b;
+      --bg-secondary: #242628;
+      --text-primary: #e8e6e3;
+      --text-secondary: #e8e6e3;
+      --text-light: #e8e6e3;
+      --text-muted: #b2aba1;
+      --link-color: #3391ff;
+      --selection-bg: #004daa;
+      --selection-text: #e8e6e3;
+      --border-color: #736b5e;
+      --shadow-color: rgba(255,255,255,0.1);
+    }
+
     /* Reset */
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: "Segoe UI", Arial, sans-serif;
       line-height: 1.6;
-      background: #f7f9fc;
-      color: #333;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Selection Colors */
+    ::selection {
+      background-color: var(--selection-bg);
+      color: var(--selection-text);
+    }
+    
+    ::-moz-selection {
+      background-color: var(--selection-bg);
+      color: var(--selection-text);
     }
 
     /* Navbar */
     nav {
-      background: #d4976b;;
+      background: #b48b6e;
       color: #fff;
       display: flex;
       justify-content: space-between;
@@ -82,7 +124,7 @@
 
     /* Features Section */
     .features {
-      background: linear-gradient(135deg, rgba(58, 92, 58, 0.7), rgba(23, 43, 18, 0.7));
+      background: linear-gradient(135deg, rgba(71, 104, 71, 0.7), rgba(40, 68, 32, 0.7));
       
       padding: 60px 20px;
       text-align: center;
@@ -99,15 +141,19 @@
     }
 
     .feature-card {
-      background: white;
+      background: var(--bg-secondary);
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 8px var(--shadow-color);
     }
 
     .feature-card h3 {
       margin-bottom: 15px;
       color: #7b9d97;
+    }
+
+    [data-theme="dark"] .feature-card h3 {
+      color: #a5c3bd;
     }
 
     /* Team Section */
@@ -129,11 +175,11 @@
     }
 
     .member {
-      background: white;
+      background: var(--bg-secondary);
       padding: 20px;
       border-radius: 12px;
       width: 200px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px var(--shadow-color);
     }
 
     .member img {
@@ -150,7 +196,7 @@
     }
 
     .contact a {
-      color: #16a085;
+      color: var(--link-color);
       font-weight: bold;
       text-decoration: none;
     }
@@ -173,6 +219,7 @@
       <li><a href="#features">Features</a></li>
       <li><a href="#team">Team</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><button id="theme-toggle" style="background: none; border: 1px solid white; color: white; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">🌙 Dark</button></li>
     </ul>
   </nav>
 
@@ -183,7 +230,7 @@
     <p style="font-family: 'Montserrat', 'Playfair Display', serif; font-size: 1.1rem; font-style: italic;">Getting ready for you, stay tuned.</p>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700&display=swap" rel="stylesheet">
-    <button style="background: #d4976b; color: #ffffff;">Learn More</button>
+    <button style="background: #b48b6e; color: #ffffff;">Learn More</button>
   </section>
 
   <!-- Features -->
@@ -239,6 +286,36 @@
   <footer>
     <p>© 2025 Chef_Bono_VC_Team — All Rights Reserved</p>
   </footer>
+
+  <script>
+    // Dark mode toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    
+    // Check for saved theme preference or default to 'light'
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // Apply the saved theme on page load
+    if (currentTheme === 'dark') {
+      body.setAttribute('data-theme', 'dark');
+      themeToggle.textContent = '☀️ Light';
+    }
+    
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = body.getAttribute('data-theme');
+      
+      if (currentTheme === 'dark') {
+        body.removeAttribute('data-theme');
+        themeToggle.textContent = '🌙 Dark';
+        localStorage.setItem('theme', 'light');
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.textContent = '☀️ Light';
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  </script>
 
 </body>
 </html>
