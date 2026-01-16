@@ -260,27 +260,32 @@
  <section id="pdfs" style="background: #334A33; padding: 60px 20px; text-align: center;">
   <h2>Our Documents</h2>
   <div id="pdf-nav" style="margin-bottom: 30px;">
-    <button onclick="showPDF(0)" style="margin: 0 10px;">PDF 1</button>
-    <button onclick="showPDF(1)" style="margin: 0 10px;">PDF 2</button>
-    <button onclick="showPDF(2)" style="margin: 0 10px;">PDF 3</button>
-    <button onclick="showPDF(3)" style="margin: 0 10px;">PDF 4</button>
+    <button onclick="showPDF(0)" style="margin: 0 10px;"> project_description</button>
+    <button onclick="showPDF(1)" style="margin: 0 10px;">project_spesification_report</button>
+    <button onclick="showPDF(2)" style="margin: 0 10px;">Analysis_report</button>
+    <button onclick="showPDF(3)" style="margin: 0 10px;">high_level_design_report</button>
+    <button onclick="showPDF(4)" style="margin: 0 10px;">poster</button>
   </div>
   <div id="pdf-viewer">
     <div class="pdf-item" style="display: block;">
-      <h3>PDF 1</h3>
+      <h3>project_description</h3>
       <embed src="project_description.pdf" type="application/pdf" width="400" height="500" />
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>PDF 2</h3>
+      <h3>project_spesification_report</h3>
       <iframe src="project_spesification_report.pdf" width="400" height="500"></iframe>
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>PDF 3</h3>
+      <h3>Analysis_report</h3>
       <iframe src="Analysis_report.pdf" width="400" height="500"></iframe>
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>PDF 4</h3>
+      <h3>high_level_design_report</h3>
       <iframe src="high_level_design_report.pdf" width="400" height="500"></iframe>
+    </div>
+    <div class="pdf-item" style="display: none;">
+      <h3>poster</h3>
+      <iframe src="poster.pdf" width="400" height="500"></iframe>
     </div>
   </div>
   <script>
