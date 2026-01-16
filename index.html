@@ -257,47 +257,66 @@
     </div>
   </section>
 
- <section id="pdfs" style="background: #334A33; padding: 60px 20px; text-align: center;">
+<!-- ...existing code... -->
+<section id="pdfs" style="background: #334A33; padding: 60px 20px; text-align: center;">
   <h2>Our Documents</h2>
-  <div id="pdf-nav" style="margin-bottom: 30px;">
-    <button onclick="showPDF(0)" style="margin: 0 10px;"> project_description</button>
-    <button onclick="showPDF(1)" style="margin: 0 10px;">project_spesification_report</button>
-    <button onclick="showPDF(2)" style="margin: 0 10px;">Analysis_report</button>
-    <button onclick="showPDF(3)" style="margin: 0 10px;">high_level_design_report</button>
-    <button onclick="showPDF(4)" style="margin: 0 10px;">poster</button>
+  <div id="pdf-nav" style="margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 20px;">
+    <button id="prev-pdf" style="font-size: 2rem; background: var(--bg-secondary); color: var(--text-light); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer;">&#8592;</button>
+    <span id="pdf-title" style="font-size: 1.3rem; font-weight: bold; color: var(--text-light);"></span>
+    <button id="next-pdf" style="font-size: 2rem; background: var(--bg-secondary); color: var(--text-light); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer;">&#8594;</button>
   </div>
   <div id="pdf-viewer">
     <div class="pdf-item" style="display: block;">
-      <h3>project_description</h3>
+      <h3 style="display:none;">project_description</h3>
       <embed src="project_description.pdf" type="application/pdf" width="400" height="500" />
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>project_spesification_report</h3>
+      <h3 style="display:none;">project_spesification_report</h3>
       <iframe src="project_spesification_report.pdf" width="400" height="500"></iframe>
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>Analysis_report</h3>
+      <h3 style="display:none;">Analysis_report</h3>
       <iframe src="Analysis_report.pdf" width="400" height="500"></iframe>
     </div>
     <div class="pdf-item" style="display: none;">
-      <h3>high_level_design_report</h3>
+      <h3 style="display:none;">high_level_design_report</h3>
       <iframe src="high_level_design_report.pdf" width="400" height="500"></iframe>
     </div>
-    <div class="png-item" style="display: none;">
-      <h3>poster</h3>
+    <div class="pdf-item" style="display: none;">
+      <h3 style="display:none;">poster</h3>
       <iframe src="chef_bono.png" width="400" height="500"></iframe>
     </div>
   </div>
   <script>
-    function showPDF(index) {
-      const pdfs = document.querySelectorAll('#pdf-viewer .pdf-item');
+    const pdfTitles = [
+      "project_description",
+      "project_spesification_report",
+      "Analysis_report",
+      "high_level_design_report",
+      "poster"
+    ];
+    let currentPDF = 0;
+    const pdfs = document.querySelectorAll('#pdf-viewer .pdf-item');
+    const titleSpan = document.getElementById('pdf-title');
+    function updatePDFViewer() {
       pdfs.forEach((pdf, i) => {
-        pdf.style.display = i === index ? 'block' : 'none';
+        pdf.style.display = i === currentPDF ? 'block' : 'none';
       });
+      titleSpan.textContent = pdfTitles[currentPDF];
     }
+    document.getElementById('prev-pdf').onclick = function() {
+      currentPDF = (currentPDF - 1 + pdfs.length) % pdfs.length;
+      updatePDFViewer();
+    };
+    document.getElementById('next-pdf').onclick = function() {
+      currentPDF = (currentPDF + 1) % pdfs.length;
+      updatePDFViewer();
+    };
+    // Initialize
+    updatePDFViewer();
   </script>
 </section>
-
+<!-- ...existing code... -->
  <!-- Contact -->
   <section id="contact" class="contact">
     <h2>📩 Get in Touch</h2>
