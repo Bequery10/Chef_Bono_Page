@@ -286,6 +286,18 @@
       <h3 style="display:none;">poster</h3>
       <iframe src="chef_bono.png" width="400" height="500"></iframe>
     </div>
+    <div class="pdf-item" style="display: none;">
+      <h3 style="display:none;">LLD_report</h3>
+      <iframe src="LLD_report.pdf" width="400" height="500"></iframe>
+    </div>
+    <div class="pdf-item" style="display: none;">
+      <h3 style="display:none;">LLD_v2</h3>
+      <iframe src="LLD_v2.pdf" width="400" height="500"></iframe>
+    </div>
+    <div class="pdf-item" style="display: none;">
+      <h3 style="display:none;">ChefBono_TestPlan</h3>
+      <iframe src="ChefBono_TestPlan.pdf" width="400" height="500"></iframe>
+    </div>
   </div>
   <script>
     const pdfTitles = [
@@ -293,7 +305,10 @@
       "project_spesification_report",
       "Analysis_report",
       "high_level_design_report",
-      "poster"
+      "poster",
+      "LLD_report",
+      "LLD_v2",
+      "ChefBono_TestPlan"
     ];
     let currentPDF = 0;
     const pdfs = document.querySelectorAll('#pdf-viewer .pdf-item');
