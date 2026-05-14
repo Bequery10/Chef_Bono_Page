@@ -872,20 +872,30 @@
     }
 
     .tc-avatar {
-      width: 96px;
-      height: 96px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
-      border: 1.5px solid var(--rim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      font-weight: 400;
-      color: var(--muted);
+      border: 2.5px solid var(--rim);
+      overflow: hidden;
       background: var(--surface);
       position: relative;
-      transition: border-color .4s, color .4s, transform .4s;
+      transition: border-color .4s, transform .4s, box-shadow .4s;
+      flex-shrink: 0;
+    }
+
+    .tc-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      transition: transform .5s ease, filter .5s ease;
+      filter: grayscale(20%) brightness(.95);
+    }
+
+    .team-card:hover .tc-avatar img {
+      transform: scale(1.12);
+      filter: grayscale(0%) brightness(1.05);
     }
 
     .tc-avatar::after {
@@ -899,8 +909,8 @@
 
     .team-card:hover .tc-avatar {
       border-color: var(--fire);
-      color: var(--fire2);
-      transform: scale(1.08)
+      transform: scale(1.08);
+      box-shadow: 0 0 28px rgba(232, 118, 58, .3);
     }
 
     @keyframes ring-pulse {
@@ -951,6 +961,10 @@
 
     .team-card:nth-child(3) {
       transition-delay: .31s
+    }
+
+    .team-card:nth-child(3) .tc-avatar img {
+      object-position: center 15%;
     }
 
     .team-card:nth-child(4) {
@@ -1385,6 +1399,265 @@
         transform: translateY(-12px) rotate(2deg);
       }
     }
+    /* ─── HAMBURGER MENU ─── */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 501;
+      position: relative;
+      padding: 8px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--snow);
+      border-radius: 2px;
+      transition: transform .3s, opacity .3s;
+    }
+
+    .nav-toggle.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .nav-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-toggle.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    /* ─── RESPONSIVE: TABLET (≤1024px) ─── */
+    @media (max-width: 1024px) {
+      #nav { padding: 20px 32px; }
+      #hero { padding: 0 32px 80px; }
+      .sec { padding: 100px 32px; }
+      .hero-scroll { right: 32px; }
+
+      .feat-layout { grid-template-columns: 1fr 1fr; }
+      .fi { padding: 40px 32px; }
+
+      .docs-header { grid-template-columns: 1fr; gap: 32px; }
+      .docs-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+
+      #cin { grid-template-columns: 1fr; height: auto; }
+      .cin-left { height: 50vh; }
+      .cin-right { padding: 60px 32px; }
+      .cin-img-overlay {
+        background: linear-gradient(to bottom, rgba(4, 6, 13, 0), rgba(4, 6, 13, .8));
+      }
+
+      .stat-row { grid-template-columns: repeat(3, 1fr); }
+
+      #contact { padding: 80px 32px; }
+      footer { padding: 24px 32px; }
+    }
+
+    /* ─── RESPONSIVE: MOBILE (≤768px) ─── */
+    @media (max-width: 768px) {
+      /* Hide custom cursor on mobile */
+      html { cursor: auto; }
+      #cur, #cur2 { display: none !important; }
+
+      /* Nav - hamburger */
+      .nav-toggle { display: flex; }
+
+      #nav {
+        padding: 16px 24px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+        background: rgba(4, 6, 13, .97);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--rim);
+        margin-top: 16px;
+        padding: 16px 0;
+        border-radius: 0 0 16px 16px;
+      }
+
+      .nav-links.open { display: flex; }
+
+      .nav-links li { padding: 14px 24px; }
+
+      .nav-links a {
+        font-size: .7rem;
+        letter-spacing: 3px;
+      }
+
+      .nav-logo { font-size: 1.1rem; letter-spacing: 3px; }
+      .nav-sub { font-size: .45rem; letter-spacing: 2.5px; }
+
+      /* Hero */
+      #hero {
+        padding: 0 24px 64px;
+        min-height: 600px;
+      }
+
+      .hero-h1 { letter-spacing: -1px; }
+
+      .hero-p {
+        font-size: .88rem;
+        margin-top: 24px;
+        line-height: 1.8;
+      }
+
+      .hero-cta {
+        margin-top: 36px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .btn-main {
+        padding: 14px 36px;
+        font-size: .6rem;
+      }
+
+      .hero-scroll { display: none; }
+
+      /* Sections */
+      .sec { padding: 80px 24px; }
+
+      .sec-title { margin-bottom: 48px; }
+
+      /* Features */
+      .feat-layout { grid-template-columns: 1fr; }
+      .fi { padding: 36px 24px; }
+      .fi-title { font-size: 1.5rem; }
+      .fi-desc { font-size: .85rem; }
+
+      .stat-row { grid-template-columns: 1fr; }
+      .stat-n { font-size: 3rem; }
+
+      /* Cinematic */
+      #cin { grid-template-columns: 1fr; height: auto; }
+      .cin-left { height: 40vh; }
+      .cin-right { padding: 48px 24px; }
+      .cin-quote { font-size: 1.5rem; }
+      .cin-big-q { font-size: 5rem; margin-bottom: 16px; }
+
+      /* Team */
+      .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 40px;
+      }
+
+      .team-card {
+        padding: 36px 16px 28px;
+        border-radius: 18px;
+        gap: 12px;
+      }
+
+      .tc-avatar {
+        width: 100px;
+        height: 100px;
+      }
+
+      .tc-name-lg { font-size: 1rem; }
+      .tc-role-lg { font-size: .46rem; letter-spacing: 2.5px; }
+
+      /* Documents */
+      .docs-header {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin-bottom: 40px;
+      }
+
+      .docs-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .doc-card { padding: 24px 18px; }
+      .doc-title { font-size: .92rem; }
+
+      /* Progress */
+      .todo-grid { margin-top: 40px; }
+
+      /* Contact */
+      #contact { padding: 64px 24px; min-height: 60vh; }
+      .ct-big { margin-bottom: 36px; }
+
+      /* Footer */
+      footer {
+        padding: 20px 24px;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+      }
+
+      /* Mascot */
+      #mascot {
+        width: 70px;
+        height: 70px;
+        bottom: 16px;
+        right: 16px;
+      }
+
+      /* Ticker */
+      .mq-item { padding: 0 28px; font-size: .9rem; }
+    }
+
+    /* ─── RESPONSIVE: SMALL MOBILE (≤480px) ─── */
+    @media (max-width: 480px) {
+      #nav { padding: 14px 16px; }
+      #hero { padding: 0 16px 48px; min-height: 520px; }
+      .sec { padding: 64px 16px; }
+
+      .hero-p { font-size: .82rem; }
+      .btn-main { padding: 12px 28px; font-size: .55rem; }
+
+      .sec-title { margin-bottom: 36px; }
+
+      .fi { padding: 28px 18px; }
+      .fi-title { font-size: 1.3rem; }
+      .fi-num { font-size: 3.5rem; }
+
+      .team-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .team-card {
+        padding: 28px 12px 22px;
+        gap: 10px;
+      }
+
+      .tc-avatar { width: 80px; height: 80px; }
+      .tc-avatar::after { inset: -5px; }
+      .tc-name-lg { font-size: .9rem; }
+      .tc-num { font-size: .42rem; top: 10px; right: 12px; }
+
+      .docs-grid { grid-template-columns: 1fr; }
+      .doc-card { padding: 20px 16px; }
+
+      .stat-cell { padding: 28px 20px; }
+      .stat-n { font-size: 2.5rem; }
+
+      .cin-left { height: 32vh; }
+      .cin-right { padding: 36px 16px; }
+      .cin-quote { font-size: 1.2rem; }
+      .cin-txt { font-size: .82rem; }
+
+      #contact { padding: 48px 16px; min-height: auto; }
+      .ct-big { font-size: clamp(2.2rem, 8vw, 4rem); }
+
+      footer { padding: 16px; }
+
+      #mascot { width: 56px; height: 56px; bottom: 12px; right: 12px; }
+    }
   </style>
 </head>
 
@@ -1403,7 +1676,12 @@
       <div class="nav-logo">Chef <span>Bono</span></div>
       <div class="nav-sub">TED University · Senior Design 2025–26</div>
     </div>
-    <ul class="nav-links">
+    <div class="nav-toggle" id="navToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <ul class="nav-links" id="navLinks">
       <li><a href="#features">Features</a></li>
       <li><a href="#team">Team</a></li>
       <li><a href="#documents">Docs</a></li>
@@ -1563,29 +1841,29 @@
     <div class="team-grid">
       <div class="team-card">
         <span class="tc-num">01</span>
-        <div class="tc-avatar">YS</div>
-        <div class="tc-name-lg">Yelda Sıla<br />Mumcu</div>
-        <div class="tc-divider"></div>
-        <div class="tc-role-lg">Team Member</div>
-      </div>
-      <div class="team-card">
-        <span class="tc-num">02</span>
-        <div class="tc-avatar">BG</div>
-        <div class="tc-name-lg">Berkan<br />Gökgöz</div>
-        <div class="tc-divider"></div>
-        <div class="tc-role-lg">Team Member</div>
-      </div>
-      <div class="team-card">
-        <span class="tc-num">03</span>
-        <div class="tc-avatar">BŞ</div>
+        <div class="tc-avatar"><img src="buse_sahin.png" alt="Buse Şahin" /></div>
         <div class="tc-name-lg">Buse<br />Şahin</div>
         <div class="tc-divider"></div>
         <div class="tc-role-lg">Team Member</div>
       </div>
       <div class="team-card">
-        <span class="tc-num">04</span>
-        <div class="tc-avatar">ES</div>
+        <span class="tc-num">02</span>
+        <div class="tc-avatar"><img src="yelda_mumcu.png" alt="Yelda Sıla Mumcu" /></div>
+        <div class="tc-name-lg">Yelda Sıla<br />Mumcu</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+      <div class="team-card">
+        <span class="tc-num">03</span>
+        <div class="tc-avatar"><img src="eren_serdar.png" alt="Eren Serdar" /></div>
         <div class="tc-name-lg">Eren<br />Serdar</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+      <div class="team-card">
+        <span class="tc-num">04</span>
+        <div class="tc-avatar"><img src="berkan_gokgoz.png" alt="Berkan Gökgöz" /></div>
+        <div class="tc-name-lg">Berkan<br />Gökgöz</div>
         <div class="tc-divider"></div>
         <div class="tc-role-lg">Team Member</div>
       </div>
@@ -1773,6 +2051,22 @@
         if (e.isIntersecting) el.classList.add('on');
       }, { threshold: .12 }).observe(el);
     });
+
+    /* ─── MOBILE NAV TOGGLE ─── */
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    if (navToggle && navLinks) {
+      navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('active');
+        navLinks.classList.toggle('open');
+      });
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navToggle.classList.remove('active');
+          navLinks.classList.remove('open');
+        });
+      });
+    }
   </script>
 </body>
 
