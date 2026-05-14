@@ -1,397 +1,1779 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chef_Bono</title>
+  <title>Chef Bono — AI Kitchen Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Outfit:wght@200;300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
   <style>
-    /* Dark Mode Variables */
-    :root {
-      --bg-primary: #181a1b;
-      --bg-secondary: #624f1f;
-      --text-primary: #e8e6e3;
-      --text-secondary: #e8e6e3;
-      --text-light: #e8e6e3;
-      --text-muted: #b2aba1;
-      --link-color: #3391ff;
-      --selection-bg: #004daa;
-      --selection-text: #e8e6e3;
-      --border-color: #736b5e;
-      --shadow-color: rgba(255,255,255,0.1);
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
     }
 
-    /* Reset */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      /* Deep night blue palette — replaces harsh black/yellow */
+      --void: #04060D;
+      --deep: #070B18;
+      --surface: #0C1020;
+      --card: #101528;
+      --lift: #141A30;
+      --rim: #1C2440;
+      --muted: #8B96B8;
+      --pale: #C8D0E8;
+      --snow: #EFF2FA;
+
+      /* Accent: warm amber-coral */
+      --fire: #E8763A;
+      --fire2: #F0A060;
+      --fire3: #FAC890;
+      --fire-dim: rgba(232, 118, 58, .12);
+
+      /* Glass */
+      --glass-bg: rgba(16, 21, 40, .55);
+      --glass-border: rgba(200, 208, 232, .08);
+      --glass-shine: rgba(200, 208, 232, .04);
+
+      --radius: 16px;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Outfit', sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      cursor: none
+    }
 
     body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      line-height: 1.6;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      transition: background-color 0.3s ease, color 0.3s ease;
+      background: var(--void);
+      color: var(--snow);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      font-weight: 300;
     }
 
-    /* Selection Colors */
-    ::selection {
-      background-color: var(--selection-bg);
-      color: var(--selection-text);
-    }
-    
-    ::-moz-selection {
-      background-color: var(--selection-bg);
-      color: var(--selection-text);
+    a {
+      text-decoration: none;
+      color: inherit
     }
 
-    /* Navbar */
-    nav {
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      display: flex;
-      justify-content: space-between;
-      padding: 15px 40px;
-      align-items: center;
-      position: sticky;
+    /* ─── CUSTOM CURSOR ─── */
+    #cur {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--fire);
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width .2s, height .2s, background .2s;
+      mix-blend-mode: screen;
+    }
+
+    #cur2 {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(232, 118, 58, .4);
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform .12s ease, width .3s, height .3s, border-color .3s;
+    }
+
+    body:has(a:hover) #cur {
+      width: 20px;
+      height: 20px;
+      background: var(--fire2)
+    }
+
+    body:has(a:hover) #cur2 {
+      width: 60px;
+      height: 60px;
+      border-color: rgba(232, 118, 58, .2)
+    }
+
+    /* ─── GRAIN OVERLAY ─── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9000;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ─── NAV ─── */
+    #nav {
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
+      z-index: 500;
+      padding: 24px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    nav h1 {
-      font-size: 1.5rem;
+    #nav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(4, 6, 13, .96) 0%, transparent 100%);
+      pointer-events: none;
     }
 
-    nav ul {
+    .nav-brand {
+      position: relative;
+      z-index: 1
+    }
+
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 400;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--snow);
+    }
+
+    .nav-logo span {
+      color: var(--fire)
+    }
+
+    .nav-sub {
+      font-size: .52rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
       list-style: none;
+      position: relative;
+      z-index: 1
+    }
+
+    .nav-links a {
+      font-size: .6rem;
+      font-weight: 500;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .3s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--fire);
+      transition: width .35s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--snow)
+    }
+
+    .nav-links a:hover::after {
+      width: 100%
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      min-height: 720px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 64px 110px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(105deg, rgba(4, 6, 13, .97) 0%, rgba(4, 6, 13, .6) 55%, rgba(4, 6, 13, .2) 100%),
+        url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=2000&q=85') center/cover no-repeat;
+      will-change: transform;
+      transform-origin: center;
+    }
+
+    .hero-grad {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(4, 6, 13, 1) 0%, transparent 60%)
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px
+    }
+
+    .tag-line {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: .58rem;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--fire2);
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: fadeUp .7s .1s forwards;
+    }
+
+    .tag-line::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--fire)
+    }
+
+    .tag-line::after {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--fire)
+    }
+
+    .hero-h1 {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 12vw, 11rem);
+      font-weight: 300;
+      line-height: .88;
+      letter-spacing: -2px;
+      opacity: 0;
+      animation: fadeUp 1s .3s forwards;
+    }
+
+    .hero-h1 em {
+      font-style: italic;
+      color: var(--fire2)
+    }
+
+    .hero-p {
+      margin-top: 36px;
+      font-size: 1rem;
+      line-height: 2;
+      color: var(--pale);
+      max-width: 460px;
+      font-weight: 300;
+      opacity: 0;
+      animation: fadeUp .9s .6s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 52px;
       display: flex;
       gap: 20px;
+      align-items: center;
+      opacity: 0;
+      animation: fadeUp .9s .85s forwards;
     }
 
-    nav ul li a {
-      color: var(--text-primary);
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s ease;
-    }
-
-    nav ul li a:hover {
-      color: var(--link-color);
-    }
-
-    /* Hero Section */
-    .hero {
-      text-align: center;
-      padding: 100px 20px;
-      background: linear-gradient(135deg, rgba(117, 115, 108, 0.7), rgba(0, 0, 0, 0.7)), url('image2.jpg') center/cover no-repeat;
-      color: white;
-    }
-
-    .hero h2 {
-      font-size: 2.5rem;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 30px;
-    }
-
-    .hero button {
-      padding: 12px 25px;
+    .btn-main {
+      padding: 16px 44px;
+      background: linear-gradient(135deg, var(--fire), var(--fire2));
+      color: var(--void);
+      font-family: var(--font-body);
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
       border: none;
-      background: #2c3e50;
-      color: white;
-      font-size: 1rem;
-      border-radius: 6px;
+      cursor: pointer;
+      border-radius: 40px;
+      transition: transform .25s, box-shadow .25s;
+      box-shadow: 0 0 0 rgba(232, 118, 58, 0);
+    }
+
+    .btn-main:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 50px rgba(232, 118, 58, .35)
+    }
+
+    .btn-sec {
+      font-size: .6rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color .25s;
+      border-bottom: 1px solid rgba(139, 150, 184, .2);
+      padding-bottom: 3px;
+    }
+
+    .btn-sec:hover {
+      color: var(--snow)
+    }
+
+    .hero-scroll {
+      position: absolute;
+      right: 64px;
+      bottom: 100px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      animation: fadeUp .7s 1.3s forwards;
+    }
+
+    .hero-scroll-line {
+      width: 1px;
+      height: 72px;
+      background: linear-gradient(to bottom, var(--fire), transparent);
+      animation: pulse-line 2.5s ease infinite;
+    }
+
+    .hero-scroll-txt {
+      font-size: .52rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--fire);
+      writing-mode: vertical-rl;
+    }
+
+    /* Floating ambient orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(80px)
+    }
+
+    .o1 {
+      width: 600px;
+      height: 600px;
+      left: -200px;
+      top: -100px;
+      background: radial-gradient(circle, rgba(232, 118, 58, .08), transparent 70%);
+      animation: drift 8s ease-in-out infinite
+    }
+
+    .o2 {
+      width: 400px;
+      height: 400px;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle, rgba(16, 30, 80, .4), transparent 70%);
+      animation: drift 10s ease-in-out 2s infinite reverse
+    }
+
+    @keyframes drift {
+
+      0%,
+      100% {
+        transform: translate(0, 0)
+      }
+
+      50% {
+        transform: translate(30px, -20px)
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(35px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @keyframes pulse-line {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .12
+      }
+    }
+
+    /* ─── TICKER ─── */
+    #strip {
+      background: transparent;
+      border-top: 1px solid var(--rim);
+      border-bottom: 1px solid var(--rim);
+      padding: 22px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    #strip::before,
+    #strip::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    #strip::before {
+      left: 0;
+      background: linear-gradient(to right, var(--void), transparent)
+    }
+
+    #strip::after {
+      right: 0;
+      background: linear-gradient(to left, var(--void), transparent)
+    }
+
+    .mq-inner {
+      display: inline-flex;
+      animation: ticker 30s linear infinite
+    }
+
+    .mq-item {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--pale);
+      opacity: .45;
+      padding: 0 56px;
+      transition: opacity .3s;
+    }
+
+    .mq-item:hover {
+      opacity: 1
+    }
+
+    .mq-dot {
+      color: var(--fire);
+      opacity: .5;
+      font-size: .5rem;
+      vertical-align: middle;
+      padding: 0 8px
+    }
+
+    @keyframes ticker {
+      from {
+        transform: translateX(0)
+      }
+
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    /* ─── SECTION BASE ─── */
+    .sec {
+      padding: 140px 64px;
+      position: relative
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px
+    }
+
+    .sec-label {
+      font-size: .58rem;
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--fire)
+    }
+
+    .label-line {
+      flex: 1;
+      max-width: 40px;
+      height: 1px;
+      background: var(--fire)
+    }
+
+    .sec-title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.04;
+      margin-bottom: 80px;
+    }
+
+    .sec-title em {
+      font-style: italic;
+      color: var(--fire2)
+    }
+
+    /* ─── FEATURES ─── */
+    #features {
+      background: var(--deep)
+    }
+
+    .feat-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rim)
+    }
+
+    .fi {
+      background: var(--surface);
+      padding: 60px 50px;
+      position: relative;
+      overflow: hidden;
+      transition: background .4s;
+    }
+
+    .fi:hover {
+      background: var(--card)
+    }
+
+    .fi-num {
+      position: absolute;
+      top: 16px;
+      right: 22px;
+      font-family: var(--font-mono);
+      font-size: 5rem;
+      font-weight: 400;
+      color: rgba(232, 118, 58, .04);
+      pointer-events: none;
+      line-height: 1;
+      transition: color .4s;
+    }
+
+    .fi:hover .fi-num {
+      color: rgba(232, 118, 58, .1)
+    }
+
+    .fi-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--fire-dim);
+      border: 1px solid rgba(232, 118, 58, .15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+      transition: background .3s, border-color .3s;
+    }
+
+    .fi:hover .fi-icon {
+      background: rgba(232, 118, 58, .18);
+      border-color: rgba(232, 118, 58, .3)
+    }
+
+    .fi-icon svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--fire2);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .fi-title {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 400;
+      color: var(--snow);
+      margin-bottom: 14px;
+      line-height: 1.25
+    }
+
+    .fi-desc {
+      font-size: .9rem;
+      line-height: 1.95;
+      color: var(--muted);
+      max-width: 360px;
+      font-weight: 300
+    }
+
+    .fi-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 1px;
+      width: 0;
+      background: linear-gradient(to right, var(--fire), var(--fire2));
+      transition: width .6s ease
+    }
+
+    .fi:hover .fi-bar {
+      width: 100%
+    }
+
+    .fi-top-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--fire), transparent);
+      opacity: 0;
+      transition: opacity .4s
+    }
+
+    .fi:hover .fi-top-line {
+      opacity: .5
+    }
+
+    /* Stats */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rim);
+      margin-top: 1px
+    }
+
+    .stat-cell {
+      background: var(--surface);
+      padding: 44px 36px;
+      text-align: center;
+      transition: background .35s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-cell::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 1px;
+      background: var(--fire);
+      transition: width .4s;
+    }
+
+    .stat-cell:hover::before {
+      width: 80%
+    }
+
+    .stat-cell:hover {
+      background: var(--card)
+    }
+
+    .stat-n {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 300;
+      color: var(--fire2);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .stat-l {
+      font-size: .58rem;
+      font-weight: 500;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--muted)
+    }
+
+    /* ─── CINEMATIC SPLIT ─── */
+    #cin {
+      position: relative;
+      height: 80vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr
+    }
+
+    .cin-left {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cin-img {
+      position: absolute;
+      inset: 0;
+      background: url('cin_cooking.png') center/cover no-repeat;
+      transition: transform 8s ease;
+      transform: scale(1.06);
+    }
+
+    #cin:hover .cin-img {
+      transform: scale(1)
+    }
+
+    .cin-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(4, 6, 13, 0), rgba(4, 6, 13, .8))
+    }
+
+    .cin-right {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 70px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cin-right::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--fire), transparent);
+      opacity: .4;
+    }
+
+    .cin-quote {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--snow);
+      line-height: 1.3;
+      margin-bottom: 32px;
+    }
+
+    .cin-big-q {
+      font-family: var(--font-display);
+      font-size: 9rem;
+      color: var(--fire);
+      opacity: .1;
+      line-height: .3;
+      margin-bottom: 32px;
+      display: block;
+    }
+
+    .cin-txt {
+      font-size: .92rem;
+      line-height: 2;
+      color: var(--muted);
+      max-width: 400px;
+      font-weight: 300
+    }
+
+    .cin-tag {
+      margin-top: 40px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: .58rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--fire);
+    }
+
+    /* ─── TEAM — animated cards ─── */
+    #team {
+      background: var(--void);
+      overflow: hidden
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 28px;
+      margin-top: 64px
+    }
+
+    .team-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 52px 28px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .8s ease, transform .8s ease, border-color .4s, background .4s;
+    }
+
+    .team-card.on {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--fire), transparent);
+      opacity: 0;
+      transition: opacity .4s
+    }
+
+    .team-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(232, 118, 58, .04) 0%, transparent 60%);
+      pointer-events: none
+    }
+
+    .team-card:hover {
+      border-color: rgba(232, 118, 58, .3);
+      background: rgba(20, 26, 48, .85)
+    }
+
+    .team-card:hover::before {
+      opacity: 1
+    }
+
+    .tc-num {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-family: var(--font-mono);
+      font-size: .48rem;
+      letter-spacing: 2px;
+      color: var(--rim)
+    }
+
+    .tc-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      border: 1.5px solid var(--rim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--muted);
+      background: var(--surface);
+      position: relative;
+      transition: border-color .4s, color .4s, transform .4s;
+    }
+
+    .tc-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(232, 118, 58, .18);
+      animation: ring-pulse 3s ease-in-out infinite
+    }
+
+    .team-card:hover .tc-avatar {
+      border-color: var(--fire);
+      color: var(--fire2);
+      transform: scale(1.08)
+    }
+
+    @keyframes ring-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: .6
+      }
+
+      50% {
+        transform: scale(1.18);
+        opacity: 0
+      }
+    }
+
+    .tc-name-lg {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--snow);
+      text-align: center;
+      line-height: 1.4
+    }
+
+    .tc-divider {
+      width: 36px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--fire), transparent);
+      margin: 2px auto
+    }
+
+    .tc-role-lg {
+      font-size: .52rem;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--fire);
+      text-align: center
+    }
+
+    .team-card:nth-child(1) {
+      transition-delay: .05s
+    }
+
+    .team-card:nth-child(2) {
+      transition-delay: .18s
+    }
+
+    .team-card:nth-child(3) {
+      transition-delay: .31s
+    }
+
+    .team-card:nth-child(4) {
+      transition-delay: .44s
+    }
+
+    /* ─── DOCUMENTS — glassmorphism ─── */
+    #documents {
+      background: var(--deep)
+    }
+
+    .docs-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: end;
+      margin-bottom: 72px
+    }
+
+    .docs-header p {
+      font-size: .9rem;
+      line-height: 2;
+      color: var(--muted);
+      font-weight: 300
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px
+    }
+
+    .doc-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(120%);
+      -webkit-backdrop-filter: blur(20px) saturate(120%);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 32px 26px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease, border-color .35s, background .35s;
       cursor: pointer;
     }
 
-    .hero button:hover {
-      background: #34495e;
+    .doc-card.on {
+      opacity: 1;
+      transform: translateY(0)
     }
 
-    /* Features Section */
-    .features {
-      background: linear-gradient(135deg, rgba(71, 104, 71, 0.7), rgba(40, 68, 32, 0.7));
-      
-      padding: 60px 20px;
-      text-align: center;
+    .doc-card:hover {
+      background: rgba(20, 26, 48, .8);
+      border-color: rgba(232, 118, 58, .2);
     }
 
-    .features h2 {
-      margin-bottom: 40px;
+    .doc-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(200, 208, 232, .04), transparent 60%);
+      pointer-events: none;
     }
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
+    .doc-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: linear-gradient(to right, transparent, var(--fire), transparent);
+      opacity: 0;
+      transition: opacity .4s;
     }
 
-    .feature-card {
-      background: var(--bg-secondary);
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px var(--shadow-color);
+    .doc-card:hover::after {
+      opacity: .6
     }
 
-    .feature-card h3 {
-      margin-bottom: 15px;
-      color: #a5c3bd;
+    /* Doc number — subtle */
+    .doc-n {
+      font-family: var(--font-mono);
+      font-size: .52rem;
+      letter-spacing: 2px;
+      color: rgba(139, 150, 184, .3);
+      margin-bottom: 4px;
     }
 
-    /* Team Section */
-    .team {
-      background: #000000;
-      padding: 60px 20px;
-      text-align: center;
-    }
-
-    .team h2 {
-      margin-bottom: 40px;
-    }
-
-    .team-members {
+    /* Doc icon — geometric SVG */
+    .doc-ico {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(232, 118, 58, .08);
+      border: 1px solid rgba(232, 118, 58, .12);
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       justify-content: center;
-      gap: 30px;
+      transition: background .3s;
     }
 
-    .member {
-      background: var(--bg-secondary);
-      padding: 20px;
-      border-radius: 12px;
-      width: 200px;
-      box-shadow: 0 4px 6px var(--shadow-color);
+    .doc-card:hover .doc-ico {
+      background: rgba(232, 118, 58, .15)
     }
 
-    .member img {
-      width: 100%;
+    .doc-ico svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--fire2);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .doc-type {
+      font-size: .5rem;
+      font-weight: 600;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--fire)
+    }
+
+    .doc-title {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--snow);
+      line-height: 1.35
+    }
+
+    .doc-arrow {
+      margin-top: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .58rem;
+      font-weight: 500;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(232, 118, 58, .4);
+      transition: color .25s, gap .25s;
+    }
+
+    .doc-card:hover .doc-arrow {
+      color: var(--fire2);
+      gap: 14px
+    }
+
+    /* Stagger */
+    .docs-grid .doc-card:nth-child(1) {
+      transition-delay: .04s
+    }
+
+    .docs-grid .doc-card:nth-child(2) {
+      transition-delay: .1s
+    }
+
+    .docs-grid .doc-card:nth-child(3) {
+      transition-delay: .16s
+    }
+
+    .docs-grid .doc-card:nth-child(4) {
+      transition-delay: .22s
+    }
+
+    .docs-grid .doc-card:nth-child(5) {
+      transition-delay: .28s
+    }
+
+    .docs-grid .doc-card:nth-child(6) {
+      transition-delay: .34s
+    }
+
+    .docs-grid .doc-card:nth-child(7) {
+      transition-delay: .4s
+    }
+
+    .docs-grid .doc-card:nth-child(8) {
+      transition-delay: .46s
+    }
+
+    /* ─── PROGRESS ─── */
+    #todo {
+      background: var(--void)
+    }
+
+    .todo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 56px
+    }
+
+    .tc {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 28px 30px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color .3s, background .3s;
+    }
+
+    .tc:hover {
+      border-color: rgba(232, 118, 58, .2);
+      background: rgba(16, 21, 40, .75)
+    }
+
+    .tc-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--snow);
+      margin-bottom: 20px
+    }
+
+    .tc-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .badge-done {
+      font-size: .52rem;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(60, 160, 80, .12);
+      color: #7dd898;
+      border: 1px solid rgba(60, 160, 80, .2);
+    }
+
+    .pri-hi {
+      font-size: .54rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--fire)
+    }
+
+    .pri-md {
+      font-size: .54rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--fire2)
+    }
+
+    .pri-lo {
+      font-size: .54rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #7dd898
+    }
+
+    .tc-prog-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: linear-gradient(to right, var(--fire), var(--fire2))
+    }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      background: var(--surface);
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-orb {
+      position: absolute;
+      width: 800px;
+      height: 800px;
       border-radius: 50%;
-      margin-bottom: 15px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(232, 118, 58, .05) 0%, transparent 65%);
+      pointer-events: none;
+      animation: drift 9s ease-in-out infinite;
     }
 
-    /* Contact Section */
-    .contact {
-      background: #000000;
-      padding: 60px 20px;
-      text-align: center;
+    .ct-big {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 9vw, 8.5rem);
+      font-weight: 300;
+      line-height: .9;
+      margin-bottom: 56px;
+      position: relative;
+      z-index: 1;
     }
 
-    .contact a {
-      color: var(--link-color);
-      font-weight: bold;
-      text-decoration: none;
+    .ct-big em {
+      font-style: italic;
+      color: var(--fire2)
     }
 
-    /* Footer */
+    .ct-mail {
+      font-family: var(--font-mono);
+      font-size: clamp(.75rem, 1.3vw, .95rem);
+      color: var(--fire);
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid rgba(232, 118, 58, .25);
+      padding-bottom: 5px;
+      transition: color .25s, border-color .25s;
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .ct-mail:hover {
+      color: var(--fire2);
+      border-color: var(--fire2)
+    }
+
+    .ct-sub {
+      margin-top: 22px;
+      font-size: .58rem;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: .4;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── FOOTER ─── */
     footer {
-      background: #000000;
-      color: #ccc;
-      text-align: center;
-      padding: 15px;
-      font-size: 0.9rem;
+      background: var(--void);
+      border-top: 1px solid var(--rim);
+      padding: 28px 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .f-copy {
+      font-size: .58rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: .3
+    }
+
+    .f-logo {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 4px;
+      color: var(--fire);
+      opacity: .4
+    }
+
+    /* ─── REVEAL ─── */
+    .rev {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .9s ease, transform .9s ease
+    }
+
+    .rev.on {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    .rev2 {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .9s .15s ease, transform .9s .15s ease
+    }
+
+    .rev2.on {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    /* ─── MASCOT ─── */
+    #mascot {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 8000;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      pointer-events: auto;
+      animation: mascot-float 3.2s ease-in-out infinite;
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), filter .35s;
+      filter: drop-shadow(0 8px 28px rgba(232, 118, 58, .35));
+      will-change: transform;
+    }
+
+    #mascot:hover {
+      transform: scale(1.28) translateY(-6px) !important;
+      filter: drop-shadow(0 16px 40px rgba(232, 118, 58, .55));
+      animation-play-state: paused;
+    }
+
+    #mascot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    @keyframes mascot-float {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(-2deg);
+      }
+
+      50% {
+        transform: translateY(-12px) rotate(2deg);
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- Navbar -->
-  <nav>
-    <ul>
+  <div id="cur"></div>
+  <div id="cur2"></div>
+
+  <!-- ═══ FLOATING MASCOT ═══ -->
+  <div id="mascot" title="Chef Bono">
+    <img src="mascot.png" alt="Chef Bono Maskot" />
+  </div>
+
+  <nav id="nav">
+    <div class="nav-brand">
+      <div class="nav-logo">Chef <span>Bono</span></div>
+      <div class="nav-sub">TED University · Senior Design 2025–26</div>
+    </div>
+    <ul class="nav-links">
       <li><a href="#features">Features</a></li>
       <li><a href="#team">Team</a></li>
+      <li><a href="#documents">Docs</a></li>
+      <li><a href="#todo">Progress</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <h2 style="font-family: 'Playfair Display', serif; font-weight: 2000; letter-spacing: 2px; font-size: 8rem;">Chef Bono</h2>
-    <p style="font-family: 'Playfair Display', serif; font-size: 1.3rem; font-style: italic;">Your favorite virtual chef, at your service.</p>
-    <p style="font-family: 'Montserrat', 'Playfair Display', serif; font-size: 1.1rem; font-style: italic;">Getting ready for you, stay tuned.</p>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700&display=swap" rel="stylesheet">
-    <button style="background: var(--bg-secondary); color: var(--text-light);">Learn More</button>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="features">
-    
-    <h2 style = "font-size: 2rem;">Features</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <h3 style = "font-size: 1.5rem; ">Cooking Assistance</h3>
-        <p style = "font-size: 1.3rem; ">Get step-by-step guidance for your recipes via observing, listening, and speaking.</p>
+  <!-- ═══ HERO ═══ -->
+  <section id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-grad"></div>
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="hero-content">
+      <div class="tag-line">TED University &nbsp;·&nbsp; Computer Engineering &nbsp;·&nbsp; 2025–26</div>
+      <h1 class="hero-h1">Chef<br /><em>Bono</em></h1>
+      <p class="hero-p">An AI-powered kitchen companion that sees, listens and speaks — guiding you through every
+        recipe, completely hands-free, in real time.</p>
+      <div class="hero-cta">
+        <a href="#features" class="btn-main">Discover</a>
+        <a href="#documents" class="btn-sec">Read the Docs</a>
       </div>
-      <div class="feature-card">
-        <h3 style = "font-size: 1.5rem; ">Various Meal Categories</h3>
-        <p style = "font-size: 1.3rem; ">Diet, Vegan, Vegetarian, Gluten-Free, Desired Calorie and protein intake, and many more.</p>
-      </div>
-      <div class="feature-card">
-        <h3 style = "font-size: 1.5rem; "> Safety and Tidiness </h3>
-        <p style = "font-size: 1.3rem; ">Sets timers for your foods, warns if attempted anything dangerous and reminds you to keep the kitchen clean for the aftermath.</p>
-      </div>
+    </div>
+    <div class="hero-scroll">
+      <span class="hero-scroll-txt">Scroll</span>
+      <div class="hero-scroll-line"></div>
     </div>
   </section>
 
-  <!-- Team -->
-  <section id="team" class="team">
-    <h2>Meet The Team</h2>
-    <div class="team-members">
-      <div class="member">
-        <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Yelda Sıla Mumcu</h3>
-      </div>
-      <div class="member">
-        <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Berkan Gökgöz</h3>
-      </div>
-      <div class="member">
-        <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Buse Şahin</h3>
-      </div>
-      <div class="member">
-        <img src="https://via.placeholder.com/150" alt="Member">
-        <h3>Eren Serdar</h3>
-      </div>
-    </div>
-  </section>
-
-
-<section id="pdfs" style="background: #334A33; padding: 60px 20px; text-align: center;">
-  <h2>Our Documents</h2>
-  <div id="pdf-nav" style="margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 20px;">
-    <button id="prev-pdf" style="font-size: 2rem; background: var(--bg-secondary); color: var(--text-light); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer;">&#8592;</button>
-    <span id="pdf-title" style="font-size: 1.3rem; font-weight: bold; color: var(--text-light);"></span>
-    <button id="next-pdf" style="font-size: 2rem; background: var(--bg-secondary); color: var(--text-light); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer;">&#8594;</button>
-  </div>
-  <div id="pdf-viewer">
-    <div class="pdf-item" style="display: block;">
-      <h3 style="display:none;">project_description</h3>
-      <embed src="project_description.pdf" type="application/pdf" width="400" height="500" />
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">project_spesification_report</h3>
-      <iframe src="project_spesification_report.pdf" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">Analysis_report</h3>
-      <iframe src="Analysis_report.pdf" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">high_level_design_report</h3>
-      <iframe src="high_level_design_report.pdf" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">poster</h3>
-      <iframe src="chef_bono.png" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">LLD_report</h3>
-      <iframe src="LLD_report.pdf" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">LLD_v2</h3>
-      <iframe src="LLD_v2.pdf" width="400" height="500"></iframe>
-    </div>
-    <div class="pdf-item" style="display: none;">
-      <h3 style="display:none;">ChefBono_TestPlan</h3>
-      <iframe src="ChefBono_TestPlan.pdf" width="400" height="500"></iframe>
+  <!-- ═══ TICKER ═══ -->
+  <div id="strip">
+    <div class="mq-inner">
+      <span class="mq-item">AI Vision &amp; Voice</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Real-Time Recipe Guidance</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Smart Kitchen Safety</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Vegan · Diet · Gluten-Free</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Hands-Free Cooking</span><span class="mq-dot">◆</span>
+      <span class="mq-item">AI Vision &amp; Voice</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Real-Time Recipe Guidance</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Smart Kitchen Safety</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Vegan · Diet · Gluten-Free</span><span class="mq-dot">◆</span>
+      <span class="mq-item">Hands-Free Cooking</span><span class="mq-dot">◆</span>
     </div>
   </div>
-  <script>
-    const pdfTitles = [
-      "project_description",
-      "project_spesification_report",
-      "Analysis_report",
-      "high_level_design_report",
-      "poster",
-      "LLD_report",
-      "LLD_v2",
-      "ChefBono_TestPlan"
-    ];
-    let currentPDF = 0;
-    const pdfs = document.querySelectorAll('#pdf-viewer .pdf-item');
-    const titleSpan = document.getElementById('pdf-title');
-    function updatePDFViewer() {
-      pdfs.forEach((pdf, i) => {
-        pdf.style.display = i === currentPDF ? 'block' : 'none';
-      });
-      titleSpan.textContent = pdfTitles[currentPDF];
-    }
-    document.getElementById('prev-pdf').onclick = function() {
-      currentPDF = (currentPDF - 1 + pdfs.length) % pdfs.length;
-      updatePDFViewer();
-    };
-    document.getElementById('next-pdf').onclick = function() {
-      currentPDF = (currentPDF + 1) % pdfs.length;
-      updatePDFViewer();
-    };
-    // Initialize
-    updatePDFViewer();
-  </script>
-</section>
 
-  <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background: #181a1b; color: #e8e6e3; font-family: Arial, sans-serif;">
-    <h2 style="text-align: center; padding: 20px 0;">TODO/Backlog</h2>
-    <thead>
-    <tr style="background: #222;">
-      <th>Task Name</th>
-      <th>Status</th>
-      <th>Priority</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Project specifics</td>
-      <td>complete</td>
-      <td>high</td>
-    </tr>
-    <tr>
-      <td>Develop image analyzer module</td>
-      <td>complete</td>
-      <td>high</td>
-    </tr>
-    <tr>
-      <td>Project Analysis report</td>
-      <td>complete</td>
-      <td>high</td>
-    </tr>
-    <tr>
-      <td>Develop STT and TTS modules</td>
-      <td>complete</td>
-      <td>low</td>
-    </tr>
-    <tr>
-      <td>Develop recipe scrapper and categorizer</td>
-      <td>complete</td>
-      <td>high</td>
-    </tr>
-    <tr>
-      <td>Develop query generator module</td>
-      <td>complete</td>
-      <td>mid</td>
-    </tr>
-    <tr>
-      <td>High level design report</td>
-      <td>complete</td>
-      <td>high</td>
-    </tr>
-  </tbody>
-</table>
-
- <!-- Contact -->
-  <section id="contact" class="contact">
-    <h2>📩 Get in Touch</h2>
-    <p>Email us at <a href="mailto:chef.bono.vc@outlook.com">chef.bono.vc@outlook.com</a></p>
+  <!-- ═══ FEATURES ═══ -->
+  <section id="features" class="sec">
+    <div class="rev">
+      <div class="label-row">
+        <div class="label-line"></div>
+        <p class="sec-label">Core Capabilities</p>
+      </div>
+      <h2 class="sec-title">Built for the<br /><em>modern kitchen</em></h2>
+    </div>
+    <div class="feat-layout rev">
+      <div class="fi">
+        <div class="fi-top-line"></div>
+        <span class="fi-num">01</span>
+        <div class="fi-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </div>
+        <h3 class="fi-title">AI Cooking Assistant</h3>
+        <p class="fi-desc">Chef Bono watches your workspace through the camera, listens to your questions, and guides
+          you step by step — completely hands-free.</p>
+        <div class="fi-bar"></div>
+      </div>
+      <div class="fi">
+        <div class="fi-top-line"></div>
+        <span class="fi-num">02</span>
+        <div class="fi-icon">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0-9a1 1 0 0 1 1 1v4a1 1 0 0 1-2 0v-4a1 1 0 0 1 1-1zm0-4a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          </svg>
+        </div>
+        <h3 class="fi-title">Every Diet, Every Taste</h3>
+        <p class="fi-desc">Vegan, vegetarian, gluten-free, keto, or custom calorie targets — Chef Bono adapts every
+          suggestion to your lifestyle and nutritional goals.</p>
+        <div class="fi-bar"></div>
+      </div>
+      <div class="fi">
+        <div class="fi-top-line"></div>
+        <span class="fi-num">03</span>
+        <div class="fi-icon">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </div>
+        <h3 class="fi-title">Smart Timers &amp; Alerts</h3>
+        <p class="fi-desc">Intelligent countdown timers, danger-detection warnings, and post-cooking cleanup reminders
+          keep your kitchen safe at every single step.</p>
+        <div class="fi-bar"></div>
+      </div>
+      <div class="fi">
+        <div class="fi-top-line"></div>
+        <span class="fi-num">04</span>
+        <div class="fi-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
+        </div>
+        <h3 class="fi-title">Vast Recipe Library</h3>
+        <p class="fi-desc">Scraped, enriched and categorised — thousands of recipes ranked to exactly match what
+          ingredients you have in your fridge right now.</p>
+        <div class="fi-bar"></div>
+      </div>
+    </div>
+    <div class="stat-row rev">
+      <div class="stat-cell">
+        <div class="stat-n" data-count="20000">0</div>
+        <div class="stat-l">Recipes Indexed</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-n" data-count="9">0</div>
+        <div class="stat-l">Diet Categories</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-n" data-count="4">0</div>
+        <div class="stat-l">Core AI Modules</div>
+      </div>
+    </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ═══ CINEMATIC SPLIT ═══ -->
+  <div id="cin">
+    <div class="cin-left">
+      <div class="cin-img" id="cinImg"></div>
+      <div class="cin-img-overlay"></div>
+    </div>
+    <div class="cin-right rev">
+      <span class="cin-big-q">"</span>
+      <blockquote class="cin-quote">The chef that never leaves your kitchen.</blockquote>
+      <p class="cin-txt">From the first chop to the final plate, Chef Bono observes, assists and ensures every dish
+        turns out exactly as it should — every single time.</p>
+      <div class="cin-tag">
+        <div class="label-line"></div>
+        AI Kitchen Companion
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEAM CARDS ═══ -->
+  <section id="team" class="sec">
+    <div class="rev">
+      <div class="label-row">
+        <div class="label-line"></div>
+        <p class="sec-label">The people behind it</p>
+      </div>
+      <h2 class="sec-title">Meet the<br /><em>Team</em></h2>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <span class="tc-num">01</span>
+        <div class="tc-avatar">YS</div>
+        <div class="tc-name-lg">Yelda Sıla<br />Mumcu</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+      <div class="team-card">
+        <span class="tc-num">02</span>
+        <div class="tc-avatar">BG</div>
+        <div class="tc-name-lg">Berkan<br />Gökgöz</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+      <div class="team-card">
+        <span class="tc-num">03</span>
+        <div class="tc-avatar">BŞ</div>
+        <div class="tc-name-lg">Buse<br />Şahin</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+      <div class="team-card">
+        <span class="tc-num">04</span>
+        <div class="tc-avatar">ES</div>
+        <div class="tc-name-lg">Eren<br />Serdar</div>
+        <div class="tc-divider"></div>
+        <div class="tc-role-lg">Team Member</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ DOCUMENTS ═══ -->
+  <section id="documents" class="sec">
+    <div class="docs-header">
+      <div class="rev">
+        <div class="label-row">
+          <div class="label-line"></div>
+          <p class="sec-label">Project Reports</p>
+        </div>
+        <h2 class="sec-title" style="margin-bottom:0">Our<br /><em>Documents</em></h2>
+      </div>
+      <div class="rev2">
+        <p>All design, analysis and technical reports from the full project lifecycle — from initial specification
+          through to low-level design and test planning.</p>
+      </div>
+    </div>
+    <div class="docs-grid" id="docsGrid"></div>
+  </section>
+
+  <!-- ═══ PROGRESS ═══ -->
+  <section id="todo" class="sec">
+    <div class="rev">
+      <div class="label-row">
+        <div class="label-line"></div>
+        <p class="sec-label">Progress</p>
+      </div>
+      <h2 class="sec-title">Development<br /><em>Backlog</em></h2>
+    </div>
+    <div class="todo-grid rev">
+      <div class="tc">
+        <p class="tc-name">Project Specifics</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">Image Analyser Module</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">Project Analysis Report</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">STT &amp; TTS Modules</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-lo">Low</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">Recipe Scraper &amp; Categoriser</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">Query Generator Module</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-md">Mid</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">High Level Design Report</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+      <div class="tc">
+        <p class="tc-name">LLD &amp; Test Plan</p>
+        <div class="tc-meta"><span class="badge-done">Complete</span><span class="pri-hi">High</span></div>
+        <div class="tc-prog-bar" style="width:100%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CONTACT ═══ -->
+  <section id="contact" class="sec">
+    <div class="contact-orb"></div>
+    <div class="rev" style="text-align:center">
+      <div class="label-row" style="justify-content:center">
+        <div class="label-line"></div>
+        <p class="sec-label">Get in touch</p>
+        <div class="label-line"></div>
+      </div>
+      <h2 class="ct-big">Let's cook<br /><em>something great</em></h2>
+      <a href="mailto:chef.bono.vc@outlook.com" class="ct-mail">chef.bono.vc@outlook.com</a>
+      <p class="ct-sub">TED University · Computer Engineering Senior Design · 2026</p>
+    </div>
+  </section>
+
   <footer>
-    <p>© 2025 Chef_Bono_VC_Team — All Rights Reserved</p>
+    <p class="f-copy">© 2026 Chef Bono — TED University</p>
+    <div class="f-logo">CB</div>
+    <p class="f-copy">All Rights Reserved</p>
   </footer>
 
+  <script>
+    /* ─── CURSOR ─── */
+    const cur = document.getElementById('cur'), cur2 = document.getElementById('cur2');
+    let mx = 0, my = 0, cx = 0, cy = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx + 'px'; cur.style.top = my + 'px' });
+    (function lerp() { cx += (mx - cx) * .18; cy += (my - cy) * .18; cur2.style.left = cx + 'px'; cur2.style.top = cy + 'px'; requestAnimationFrame(lerp) })();
 
+    /* ─── PARALLAX HERO ─── */
+    const heroBg = document.getElementById('heroBg');
+    window.addEventListener('scroll', () => { heroBg.style.transform = 'translateY(' + (scrollY * .28) + 'px)' }, { passive: true });
 
+    /* ─── REVEAL ─── */
+    document.querySelectorAll('.rev,.rev2').forEach(el => {
+      new IntersectionObserver(([e]) => { if (e.isIntersecting) el.classList.add('on') }, { threshold: .06 }).observe(el);
+    });
+
+    /* ─── COUNTER ─── */
+    document.querySelectorAll('.stat-n[data-count]').forEach(el => {
+      let ran = false;
+      new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting || ran) return;
+        ran = true;
+        const target = parseInt(el.dataset.count), dur = 1800, start = performance.now();
+        (function tick(now) {
+          const p = Math.min((now - start) / dur, 1), ease = 1 - Math.pow(1 - p, 3), val = Math.floor(ease * target);
+          if (target >= 1000) el.textContent = val.toLocaleString() + (p < 1 ? '' : '+');
+          else el.textContent = val;
+          if (p < 1) requestAnimationFrame(tick);
+          else el.textContent = target >= 1000 ? target.toLocaleString() + '+' : String(target);
+        })(start);
+      }, { threshold: .5 }).observe(el);
+    });
+
+    /* ─── DOCS GRID ─── */
+    const svgDoc = `<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`;
+    const svgImg = `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`;
+    const svgSearch = `<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+    const svgBuild = `<svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`;
+    const svgCheck = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+    const svgLayers = `<svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`;
+
+    const docs = [
+      { title: 'Project Description', file: 'project_description.pdf', type: 'PDF', ico: svgDoc },
+      { title: 'Specification Report', file: 'project_spesification_report.pdf', type: 'PDF', ico: svgBuild },
+      { title: 'Analysis Report', file: 'Analysis_report.pdf', type: 'PDF', ico: svgSearch },
+      { title: 'High Level Design', file: 'high_level_design_report.pdf', type: 'PDF', ico: svgLayers },
+      { title: 'Project Poster', file: 'posterr.pdf', type: 'IMAGE', ico: svgImg },
+      { title: 'LLD Report', file: 'LLD_report.pdf', type: 'PDF', ico: svgDoc },
+      { title: 'LLD v2', file: 'LLD_v2.pdf', type: 'PDF', ico: svgDoc },
+      { title: 'Test Plan', file: 'ChefBono_TestPlan.pdf', type: 'PDF', ico: svgCheck },
+    ];
+    const grid = document.getElementById('docsGrid');
+    docs.forEach((d, i) => {
+      const el = document.createElement('div');
+      el.className = 'doc-card';
+      el.innerHTML = `
+    <div class="doc-n">${String(i + 1).padStart(2, '0')}</div>
+    <div class="doc-ico">${d.ico}</div>
+    <div class="doc-type">${d.type}</div>
+    <div class="doc-title">${d.title}</div>
+    <a class="doc-arrow" href="${d.file}" target="_blank">Open &rarr;</a>
+  `;
+      grid.appendChild(el);
+      new IntersectionObserver(([e]) => { if (e.isIntersecting) el.classList.add('on') }, { threshold: .05 }).observe(el);
+    });
+
+    /* ─── CIN PARALLAX ─── */
+    const cinImg = document.getElementById('cinImg');
+    window.addEventListener('scroll', () => {
+      const cin = document.getElementById('cin'), r = cin.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) {
+        const p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+        cinImg.style.transform = `scale(1.06) translateY(${(p - .5) * -60}px)`;
+      }
+    }, { passive: true });
+
+    /* ─── SMOOTH NAV BACKGROUND ─── */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      if (scrollY > 80) nav.style.setProperty('--nav-alpha', '1');
+      else nav.style.removeProperty('--nav-alpha');
+    }, { passive: true });
+
+    /* ─── TEAM CARDS REVEAL ─── */
+    document.querySelectorAll('.team-card').forEach(el => {
+      new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) el.classList.add('on');
+      }, { threshold: .12 }).observe(el);
+    });
+  </script>
 </body>
+
 </html>
