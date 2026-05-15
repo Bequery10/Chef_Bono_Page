@@ -215,10 +215,101 @@
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(105deg, rgba(4, 6, 13, .97) 0%, rgba(4, 6, 13, .6) 55%, rgba(4, 6, 13, .2) 100%),
+        linear-gradient(105deg, rgba(4, 6, 13, .98) 0%, rgba(4, 6, 13, .95) 45%, rgba(4, 6, 13, .88) 100%),
         url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=2000&q=85') center/cover no-repeat;
       will-change: transform;
       transform-origin: center;
+    }
+
+    /* 3D Floating Pizza */
+    .hero-pizza-wrap {
+      position: absolute;
+      right: 6%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: clamp(320px, 38vw, 560px);
+      height: clamp(320px, 38vw, 560px);
+      z-index: 3;
+      perspective: 800px;
+      pointer-events: none;
+    }
+
+    .hero-pizza {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      overflow: hidden;
+      position: relative;
+      animation: pizza-float 6s ease-in-out infinite;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 20px 60px rgba(232, 118, 58, .35)) drop-shadow(0 8px 24px rgba(0,0,0,.5));
+    }
+
+    .hero-pizza img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      animation: pizza-spin 20s linear infinite;
+    }
+
+    .hero-pizza::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.18) 0%, transparent 55%);
+      pointer-events: none;
+      animation: pizza-float 6s ease-in-out infinite reverse;
+    }
+
+    /* Glow ring behind pizza */
+    .hero-pizza-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(232, 118, 58, .2);
+      animation: pizza-ring 6s ease-in-out infinite;
+      opacity: .5;
+    }
+
+    .hero-pizza-wrap::after {
+      content: '';
+      position: absolute;
+      inset: -40px;
+      border-radius: 50%;
+      border: 1px solid rgba(232, 118, 58, .08);
+      animation: pizza-ring 6s ease-in-out 1s infinite;
+      opacity: .3;
+    }
+
+    @keyframes pizza-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    @keyframes pizza-float {
+      0%, 100% {
+        transform: translateY(0px) rotateX(8deg) rotateY(-5deg);
+      }
+      33% {
+        transform: translateY(-18px) rotateX(-4deg) rotateY(8deg);
+      }
+      66% {
+        transform: translateY(8px) rotateX(6deg) rotateY(-3deg);
+      }
+    }
+
+    @keyframes pizza-ring {
+      0%, 100% {
+        transform: scale(1);
+        opacity: .5;
+      }
+      50% {
+        transform: scale(1.06);
+        opacity: .2;
+      }
     }
 
     .hero-grad {
@@ -1460,6 +1551,12 @@
 
       #contact { padding: 80px 32px; }
       footer { padding: 24px 32px; }
+
+      .hero-pizza-wrap {
+        width: clamp(250px, 32vw, 400px);
+        height: clamp(250px, 32vw, 400px);
+        right: 4%;
+      }
     }
 
     /* ─── RESPONSIVE: MOBILE (≤768px) ─── */
@@ -1529,6 +1626,33 @@
       }
 
       .hero-scroll { display: none; }
+
+      .hero-pizza-wrap {
+        position: relative;
+        right: auto;
+        top: auto;
+        transform: none;
+        width: 240px;
+        height: 240px;
+        margin: -40px auto 20px;
+        z-index: 3;
+      }
+
+      #hero {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+
+      .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero-cta {
+        align-items: center;
+      }
 
       /* Sections */
       .sec { padding: 80px 24px; }
@@ -1696,6 +1820,11 @@
     <div class="hero-grad"></div>
     <div class="orb o1"></div>
     <div class="orb o2"></div>
+    <div class="hero-pizza-wrap">
+      <div class="hero-pizza">
+        <img src="pizza_hero.png" alt="Pizza" />
+      </div>
+    </div>
     <div class="hero-content">
       <div class="tag-line">TED University &nbsp;·&nbsp; Computer Engineering &nbsp;·&nbsp; 2025–26</div>
       <h1 class="hero-h1">Chef<br /><em>Bono</em></h1>
